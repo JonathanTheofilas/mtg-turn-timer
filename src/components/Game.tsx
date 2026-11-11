@@ -4,6 +4,7 @@ import type { GameState } from '../game/types';
 import { unlockAudio, useNow, useWakeLock } from '../hooks/device';
 import { useTurnAlerts } from '../hooks/useTurnAlerts';
 import { useStore } from '../store';
+import { BackgroundPicker } from './BackgroundPicker';
 import { CommanderDamageModal, CountersModal, MenuModal, type MenuView } from './modals';
 import { PlayerPanel, type PanelModal } from './PlayerPanel';
 
@@ -66,7 +67,22 @@ export function Game({ game }: { game: GameState }) {
       )}
 
       {modal?.kind === 'commander' && <CommanderDamageModal game={game} index={modal.player} flip={top.includes(modal.player)} onClose={close} />}
-      {modal?.kind === 'counters' && <CountersModal game={game} index={modal.player} flip={top.includes(modal.player)} onClose={close} />}
+      {modal?.kind === 'counters' && (
+        <CountersModal game={game} index={modal.player} flip={top.includes(modal.player)} onClose={close} onBackground={() => setModal({ kind: 'background', player: modal.player })} />
+      )}
+      {modal?.kind === 'background' && (
+        <BackgroundPicker
+          playerName={game.players[modal.player].name}
+          current={game.players[modal.player].background}
+          flip={top.includes(modal.player)}
+          onPick={(background) => {
+            dispatch({ type: 'setBackground', player: modal.player, background });
+            // Keep the setup in sync so the next game starts with the same art.
+            useStore.getState().updateSetup((st) => { if (st.players[modal.player]) st.players[modal.player].background = background; });
+          }}
+          onClose={close}
+        />
+      )}
       {modal?.kind === 'menu' && <MenuModal game={game} view={modal.view} setView={(view) => setModal({ kind: 'menu', view })} onClose={close} />}
     </div>
   );

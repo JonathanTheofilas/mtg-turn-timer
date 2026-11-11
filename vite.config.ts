@@ -15,6 +15,16 @@ export default defineConfig(({ mode }) => {
         : VitePWA({
             registerType: 'autoUpdate',
             includeAssets: ['icon.svg'],
+            // Cache card art once seen, so backgrounds still show offline at the table.
+            workbox: {
+              runtimeCaching: [
+                {
+                  urlPattern: ({ url }) => url.hostname === 'cards.scryfall.io',
+                  handler: 'CacheFirst',
+                  options: { cacheName: 'card-art', expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 365 }, cacheableResponse: { statuses: [0, 200] } },
+                },
+              ],
+            },
             manifest: {
               name: 'MTG Turn Timer',
               short_name: 'Turn Timer',

@@ -17,6 +17,7 @@ export function createGame(setup: GameSetup, now: number, random: () => number =
     rad: 0,
     casts: [0, 0],
     hasPartner: fmt.commanderDamage && p.hasPartner,
+    background: p.background ?? null,
     commanderDamage: {},
     bankMs: setup.bankMinutes * 60_000,
     turns: [],
@@ -125,6 +126,10 @@ export function reduce(prev: GameState, action: Action, now: number): GameState 
       else note(s, now, `${action.marker === 'monarch' ? 'Monarch' : 'Initiative'} cleared.`);
       break;
     }
+
+    case 'setBackground':
+      s.players[action.player].background = action.background;
+      break;
 
     case 'passTurn': {
       const p = s.players[s.activeIndex];

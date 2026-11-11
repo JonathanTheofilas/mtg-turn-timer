@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { FORMATS, MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLORS } from '../game/constants';
 import type { Format, TimerMode } from '../game/types';
 import { unlockAudio } from '../hooks/device';
 import { useStore } from '../store';
+import { BackgroundPicker } from './BackgroundPicker';
 
 function Seg<T extends string | number>({ options, value, onChange }: { options: [T, string][]; value: T; onChange: (v: T) => void }) {
   return (
@@ -21,6 +23,7 @@ export function Setup() {
   const startGame = useStore((s) => s.startGame);
   const fmt = FORMATS[setup.format];
   const players = setup.players.slice(0, setup.playerCount);
+  const [picking, setPicking] = useState<number | null>(null);
 
   const counts: [number, string][] = [];
   for (let n = MIN_PLAYERS; n <= MAX_PLAYERS; n++) counts.push([n, String(n)]);
@@ -54,6 +57,14 @@ export function Setup() {
               style={{ background: p.color }}
               onClick={() => update((s) => { s.players[i].color = PLAYER_COLORS[(PLAYER_COLORS.indexOf(p.color) + 1) % PLAYER_COLORS.length]; })}
             />
+            <button
+              className={`thumb${p.background ? ' has' : ''}`}
+              aria-label={`Background for ${p.name}`}
+              style={p.background ? { backgroundImage: `url("${p.background.url}")` } : undefined}
+              onClick={() => setPicking(i)}
+            >
+              {!p.background && '🖼'}
+            </button>
             <input type="text" value={p.name} maxLength={16} aria-label={`Player ${i + 1} name`} onChange={(e) => update((s) => { s.players[i].name = e.target.value; })} />
             {fmt.commanderDamage && (
               <label className="chk">
@@ -63,7 +74,7 @@ export function Setup() {
             )}
           </div>
         ))}
-        <p className="hint">Enter players in seating order, going clockwise. That's also the turn order. Tap a colour to change it.</p>
+        <p className="hint">Enter players in seating order, going clockwise. That's also the turn order. Tap a colour to change it, or 🖼 for card art or a photo.</p>
       </section>
 
       <section className="field">
@@ -122,6 +133,15 @@ export function Setup() {
       <button className="primary" onClick={() => { unlockAudio(); startGame(); }}>
         Start game
       </button>
+
+      {picking != null && (
+        <BackgroundPicker
+          playerName={players[picking]?.name || `Player ${picking + 1}`}
+          current={players[picking]?.background ?? null}
+          onPick={(bg) => update((s) => { s.players[picking].background = bg; })}
+          onClose={() => setPicking(null)}
+        />
+      )}
     </main>
   );
 }

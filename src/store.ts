@@ -23,7 +23,18 @@ const safeStorage = createJSONStorage(() => {
     const k = '__probe__';
     localStorage.setItem(k, k);
     localStorage.removeItem(k);
-    return localStorage;
+    return {
+      getItem: (key: string) => localStorage.getItem(key),
+      // Never let a full storage quota (e.g. several large photos) break the game.
+      setItem: (key: string, v: string) => {
+        try {
+          localStorage.setItem(key, v);
+        } catch {
+          /* quota exceeded: keep playing from memory */
+        }
+      },
+      removeItem: (key: string) => localStorage.removeItem(key),
+    };
   } catch {
     const mem = new Map<string, string>();
     return {

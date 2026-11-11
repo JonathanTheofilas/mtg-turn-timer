@@ -17,6 +17,13 @@ export interface GameConfig {
   incrementMs: number;
 }
 
+/** A player's panel background: card art (remote URL) or an uploaded photo (data URL). */
+export interface Background {
+  url: string;
+  /** Artist credit for card art. */
+  credit?: string;
+}
+
 export interface TurnRecord {
   durationMs: number;
   overtimeMs: number;
@@ -34,6 +41,7 @@ export interface Player {
   /** Number of times each commander has been cast from the command zone (tax = 2 × casts). */
   casts: [number, number];
   hasPartner: boolean;
+  background: Background | null;
   /** Damage taken, keyed by `${sourcePlayerId}:${commanderSlot}`. */
   commanderDamage: Record<string, number>;
   /** Remaining time bank (bank mode). */
@@ -75,6 +83,7 @@ export interface PlayerSetup {
   name: string;
   color: string;
   hasPartner: boolean;
+  background?: Background | null;
 }
 
 export interface GameSetup {
@@ -97,6 +106,7 @@ export type Action =
   | { type: 'adjustCounter'; player: number; counter: Counter; delta: number }
   | { type: 'adjustCasts'; player: number; slot: 0 | 1; delta: number }
   | { type: 'setMarker'; marker: Marker; player: number | null }
+  | { type: 'setBackground'; player: number; background: Background | null }
   | { type: 'passTurn' }
   | { type: 'togglePause' }
   | { type: 'reverseDirection' }

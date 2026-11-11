@@ -7,7 +7,7 @@ import { beep, unlockAudio, useNow, vibrate } from '../hooks/device';
 import { useHoldPress } from '../hooks/useHoldPress';
 import { useStore } from '../store';
 
-export type PanelModal = 'commander' | 'counters';
+export type PanelModal = 'commander' | 'counters' | 'background';
 
 interface Props {
   game: GameState;
@@ -38,12 +38,18 @@ export function PlayerPanel({ game, index, flipped, onOpen }: Props) {
 
   return (
     <div
-      className={`panel${active ? ' active' : ''}${p.eliminated ? ' out' : ''}`}
+      className={`panel${active ? ' active' : ''}${p.eliminated ? ' out' : ''}${p.background ? ' has-bg' : ''}`}
       style={{ '--c': p.color } as CSSProperties}
       data-player={index}
       onPointerDown={unlockAudio}
     >
       <div className={`pin${flipped ? ' flipped' : ''}`}>
+        {p.background && (
+          <>
+            <div className="bg" style={{ backgroundImage: `url("${p.background.url}")` }} />
+            {p.background.credit && <div className="credit">Art: {p.background.credit}</div>}
+          </>
+        )}
         <div className="pname">
           {p.name}
           {badges && <span className="badge"> {badges}</span>}
@@ -59,16 +65,18 @@ export function PlayerPanel({ game, index, flipped, onOpen }: Props) {
 
         <div className="pills">
           {game.config.commanderDamage && (
-            <button className={`pill${maxCmd >= 15 ? ' hot' : ''}`} onClick={() => onOpen('commander')} aria-label="Commander damage">⚔ {maxCmd}</button>
+            <button className={`pill big${maxCmd >= 15 ? ' hot' : ''}`} onClick={() => onOpen('commander')} aria-label="Commander damage">
+              ⚔ {maxCmd}
+            </button>
           )}
-          <button className={`pill${p.poison >= LETHAL_POISON - 3 ? ' hot' : ''}`} onClick={() => onOpen('counters')} aria-label="Poison">☠ {p.poison}</button>
+          {p.poison > 0 && <button className={`pill${p.poison >= LETHAL_POISON - 3 ? ' hot' : ''}`} onClick={() => onOpen('counters')} aria-label="Poison">☠ {p.poison}</button>}
           {p.energy > 0 && <button className="pill" onClick={() => onOpen('counters')}>⚡ {p.energy}</button>}
           {p.experience > 0 && <button className="pill" onClick={() => onOpen('counters')}>✦ {p.experience}</button>}
           {p.rad > 0 && <button className="pill" onClick={() => onOpen('counters')}>☢ {p.rad}</button>}
           {game.config.commanderDamage && (p.casts[0] > 0 || p.casts[1] > 0) && (
             <button className="pill" onClick={() => onOpen('counters')}>Tax {p.casts[0] * 2}{p.hasPartner ? `/${p.casts[1] * 2}` : ''}</button>
           )}
-          <button className="pill" onClick={() => onOpen('counters')} aria-label="More counters">⋯</button>
+          <button className="pill big" onClick={() => onOpen('counters')} aria-label="Counters and options">⋯</button>
         </div>
 
         {active && <PassButton />}

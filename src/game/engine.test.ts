@@ -32,6 +32,20 @@ describe('setup', () => {
   });
 });
 
+describe('backgrounds', () => {
+  it('carries backgrounds from setup and can change them in game', () => {
+    const base = setup();
+    base.players[0].background = { url: 'https://img/x.jpg', credit: 'Artist' };
+    let s = createGame(base, T0);
+    expect(s.players[0].background?.credit).toBe('Artist');
+    expect(s.players[1].background).toBeNull();
+    s = run(s, T0, { type: 'setBackground', player: 1, background: { url: 'data:image/jpeg;base64,AA' } });
+    expect(s.players[1].background?.url).toMatch(/^data:/);
+    s = run(s, T0, { type: 'setBackground', player: 0, background: null });
+    expect(s.players[0].background).toBeNull();
+  });
+});
+
 describe('life and damage', () => {
   it('adjusts life and merges rapid changes in the log', () => {
     let s = started();

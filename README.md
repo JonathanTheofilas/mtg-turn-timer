@@ -7,10 +7,11 @@ Put one phone or tablet in the middle of the table. Each player gets a panel fac
 ## Features
 
 - 2–6 players, panels rotated for the far side of the table, seating order = turn order
+- Player backgrounds: search any card's art (via [Scryfall](https://scryfall.com), artist credited) or upload a photo
 - Commander, Standard and Custom presets; starting life 20/25/30/40
 - Life: tap ±1, hold ±10, running change indicator
 - Commander damage per opposing commander (partners tracked separately), 21 = out, optionally reduces life
-- Poison (10 = out), energy, experience, rad, commander tax, monarch, initiative
+- Poison (10 = out; shown on the panel once a player has any), energy, experience, rad, commander tax, monarch, initiative
 - **Turn clock**, chosen per game:
   - **Per turn**: the same allowance every turn (1, 1:30, 2, 3, 5 min or custom)
   - **Chess clock**: a time bank per player for the whole game, plus seconds added each turn
@@ -58,3 +59,7 @@ All rules live in `src/game/` and take `now` as a parameter, so they're determin
 ## License
 
 MIT
+
+## Credits
+
+Card art is fetched from the [Scryfall API](https://scryfall.com/docs/api). Artwork © its respective artists and Wizards of the Coast. This is unofficial Fan Content, not approved or endorsed by Wizards.

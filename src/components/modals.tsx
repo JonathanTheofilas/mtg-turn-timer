@@ -60,7 +60,7 @@ const COUNTERS: [Counter, string][] = [
   ['rad', '☢ Rad'],
 ];
 
-export function CountersModal({ game, index, flip, onClose }: PlayerModalProps) {
+export function CountersModal({ game, index, flip, onClose, onBackground }: PlayerModalProps & { onBackground: () => void }) {
   const dispatch = useStore((s) => s.dispatch);
   const p = game.players[index];
   return (
@@ -93,6 +93,10 @@ export function CountersModal({ game, index, flip, onClose }: PlayerModalProps) 
           </div>
         );
       })}
+      <div className="crow">
+        <div className="who">🖼 Background</div>
+        <button className="pill wide" onClick={onBackground}>{p.background ? 'Change' : 'Card art or photo'}</button>
+      </div>
     </Modal>
   );
 }
