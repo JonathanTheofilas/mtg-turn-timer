@@ -23,10 +23,14 @@ export default defineConfig(({ mode }) => {
               background_color: '#0e0f12',
               display: 'fullscreen',
               orientation: 'any',
+              start_url: '.',
+              scope: '.',
               icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' }],
             },
           }),
     ],
+    // GitHub Pages serves from /<repo>/; the deploy workflow sets BASE_PATH.
+    base: single ? './' : process.env.BASE_PATH ?? '/',
     build: { outDir: single ? 'dist-single' : 'dist' },
     test: { environment: 'node' },
   };
